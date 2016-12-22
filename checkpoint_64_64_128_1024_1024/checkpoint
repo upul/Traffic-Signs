@@ -1,0 +1,2 @@
+model_checkpoint_path: "LeNetPlusPlus_64_64_128_1024_1024.ckpt-550"
+all_model_checkpoint_paths: "LeNetPlusPlus_64_64_128_1024_1024.ckpt-550"

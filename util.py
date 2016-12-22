@@ -6,6 +6,8 @@ import cv2
 from sklearn.preprocessing import LabelBinarizer
 from sklearn.model_selection import train_test_split
 
+import pickle
+
 
 class DataSet:
     def __init__(self, X, y):
@@ -139,9 +141,37 @@ def transform_image(img, ang_range, shear_range, trans_range):
 
 
 if __name__ == '__main__':
-    a = np.random.random_sample(100)
-    b = np.random.random_sample(100)
-    c = np.random.random_sample(100)
-    d = np.random.random_sample(100)
+    #a = np.random.random_sample(100)
+    #b = np.random.random_sample(100)
+    #c = np.random.random_sample(100)
+    #d = np.random.random_sample(100)
 
-    plot_learning_curves(a, b, c, d)
+    #plot_learning_curves(a, b, c, d)
+
+    TRAINING_FILE = './data/train.p'
+
+    TESTING_FILE = './data/test.p'
+
+    with open(TRAINING_FILE, mode='rb') as f:
+        train = pickle.load(f)
+    with open(TESTING_FILE, mode='rb') as f:
+        test = pickle.load(f)
+
+    X_train, y_train = train['features'], train['labels']
+
+    X_train_transformed = np.zeros_like(X_train)
+    y_train_transformed = np.zeros_like(y_train)
+    for i in range(X_train_transformed.shape[0]): #
+        X_train_transformed[i] = transform_image(X_train[i], 20, 10, 5)
+        y_train_transformed[i] = y_train[i]
+
+    X_train_transformed.dump('augmented_data_x.hkl')
+    y_train_transformed.dump('augmented_data_y.hkl')
+
+    x = np.load('augmented_data_x.hkl')
+    y = np.load('augmented_data_y.hkl')
+    print(x.shape)
+    print(y.shape)
+
+
+
