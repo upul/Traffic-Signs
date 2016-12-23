@@ -141,12 +141,6 @@ def transform_image(img, ang_range, shear_range, trans_range):
 
 
 if __name__ == '__main__':
-    #a = np.random.random_sample(100)
-    #b = np.random.random_sample(100)
-    #c = np.random.random_sample(100)
-    #d = np.random.random_sample(100)
-
-    #plot_learning_curves(a, b, c, d)
 
     TRAINING_FILE = './data/train.p'
 
