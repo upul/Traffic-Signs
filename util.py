@@ -102,19 +102,9 @@ def plot_learning_curves(training_losses, training_accuracies, dev_losses, dev_a
 
 def transform_image(img, ang_range, shear_range, trans_range):
     '''
-    NOTE: This code snippet was borrowed from:
+    NOTE: Some parts of this method was barrowed from:
     https://nbviewer.jupyter.org/github/vxy10/SCND_notebooks/blob/master/preprocessing_stuff/img_transform_NB.ipynb
     credit should go to the original author
-    
-    This function transforms images to generate new images.
-    The function takes in following arguments,
-    1- Image
-    2- ang_range: Range of angles for rotation
-    3- shear_range: Range of values to apply affine transform to
-    4- trans_range: Range of values to apply translations over.
-
-    A Random uniform distribution is used to generate different parameters for transformation
-
     '''
     # Rotation
     ang_rot = np.random.uniform(ang_range) - ang_range / 2
