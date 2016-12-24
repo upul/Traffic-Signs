@@ -102,6 +102,10 @@ def plot_learning_curves(training_losses, training_accuracies, dev_losses, dev_a
 
 def transform_image(img, ang_range, shear_range, trans_range):
     '''
+    NOTE: This code snippet was borrowed from:
+    https://nbviewer.jupyter.org/github/vxy10/SCND_notebooks/blob/master/preprocessing_stuff/img_transform_NB.ipynb
+    credit should go to the original author
+    
     This function transforms images to generate new images.
     The function takes in following arguments,
     1- Image
@@ -113,7 +117,6 @@ def transform_image(img, ang_range, shear_range, trans_range):
 
     '''
     # Rotation
-
     ang_rot = np.random.uniform(ang_range) - ang_range / 2
     rows, cols, ch = img.shape
     Rot_M = cv2.getRotationMatrix2D((cols / 2, rows / 2), ang_rot, 1)
@@ -141,31 +144,7 @@ def transform_image(img, ang_range, shear_range, trans_range):
 
 
 if __name__ == '__main__':
-
-    TRAINING_FILE = './data/train.p'
-
-    TESTING_FILE = './data/test.p'
-
-    with open(TRAINING_FILE, mode='rb') as f:
-        train = pickle.load(f)
-    with open(TESTING_FILE, mode='rb') as f:
-        test = pickle.load(f)
-
-    X_train, y_train = train['features'], train['labels']
-
-    X_train_transformed = np.zeros_like(X_train)
-    y_train_transformed = np.zeros_like(y_train)
-    for i in range(X_train_transformed.shape[0]): #
-        X_train_transformed[i] = transform_image(X_train[i], 20, 10, 5)
-        y_train_transformed[i] = y_train[i]
-
-    X_train_transformed.dump('augmented_data_x.hkl')
-    y_train_transformed.dump('augmented_data_y.hkl')
-
-    x = np.load('augmented_data_x.hkl')
-    y = np.load('augmented_data_y.hkl')
-    print(x.shape)
-    print(y.shape)
+	pass
 
 
 

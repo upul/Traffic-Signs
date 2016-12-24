@@ -1,17 +1,5 @@
 """
-LeNet Architecture
-
-HINTS for layers:
-
-    Convolutional layers:
-
-    tf.nn.conv2d
-    tf.nn.max_pool
-
-    For preparing the convolutional layer output for the
-    fully connected layers.
-
-    tf.contrib.flatten
+My final model for the German Traffic Sign Classification System
 """
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
@@ -38,19 +26,7 @@ REGULARIZATION_PARAM = 1e-6
 MODEL_NAME = './checkpoint_64_64_128_1024_1024/LeNetPlusPlus_64_64_128_1024_1024.ckpt'
 
 
-# LeNet architecture:
-# INPUT -> CONV -> ACT -> POOL -> CONV -> ACT -> POOL -> FLATTEN -> FC -> ACT -> FC
-#
-# Don't worry about anything else in the file too much, all you have to do is
-# create the LeNet and return the result of the last fully connected layer.
-
 def LeNetPlusPlus(x):
-    # Reshape from 2D to 4D. This prepares the data for
-    # convolutional and pooling layers.
-    # x = tf.reshape(x, (-1, 28, 28, 1))
-    # Pad 0s to 32x32. Centers the digit further.
-    # Add 2 rows/columns on each side for height and width dimensions.
-    # x = tf.pad(x, [[0, 0], [2, 2], [2, 2], [0, 0]], mode="CONSTANT")
 
     conv1_w = tf.Variable(tf.truncated_normal(shape=(3, 3, 3, 64), stddev=0.01))
     conv1_b = tf.Variable(tf.zeros(64))
@@ -71,8 +47,7 @@ def LeNetPlusPlus(x):
     conv3 = tf.nn.max_pool(conv3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding='VALID')
 
     fc1 = flatten(conv3)
-    # print('size: {}'.format(fc1.get_shape().as_list()[-1]))
-    fc1_shape = (fc1.get_shape().as_list()[-1], 1024)  # ORIGINALLY HIDDEN SIZE WAS 120
+    fc1_shape = (fc1.get_shape().as_list()[-1], 1024)
     fc1_w = tf.Variable(tf.truncated_normal(shape=(fc1_shape), stddev=0.01))
     fc1_b = tf.Variable(tf.zeros(1024))
     fc1 = tf.matmul(fc1, fc1_w) + fc1_b
@@ -84,12 +59,6 @@ def LeNetPlusPlus(x):
     fc2 = tf.matmul(fc1, fc2_w) + fc2_b
     fc2 = tf.nn.relu(fc2)
     fc2 = tf.nn.dropout(fc2, keep_prob)
-
-    #fc3_w = tf.Variable(tf.truncated_normal(shape=(1024, 512), stddev=0.01))
-    #fc3_b = tf.Variable(tf.zeros(512))
-    #fc3 = tf.matmul(fc2, fc3_w) + fc3_b
-    #fc3 = tf.nn.relu(fc3)
-    #fc3 = tf.nn.dropout(fc3, keep_prob)
 
     fc3_w = tf.Variable(tf.truncated_normal(shape=(1024, 43), stddev=0.01))
     fc3_b = tf.Variable(tf.zeros(43))
@@ -103,11 +72,11 @@ def regularization_cost(weights, regularization):
     return reg_cost
 
 
-# MNIST consists of 28x28x1, grayscale images
+# consists of 32x32x3, color images
 x = tf.placeholder("float", [None, 32, 32, 3])
 tf.add_to_collection("x", x)  # Remember this Op.
 
-# Classify over 10 digits 0-9
+# Classify over 43 traffic signs
 y = tf.placeholder("float", [None, 43])
 tf.add_to_collection("y", y) 
 
@@ -132,13 +101,6 @@ def eval_data(dataset):
     """
     Given a dataset as input returns the loss and accuracy.
     """
-    # If dataset.num_examples is not divisible by BATCH_SIZE
-    # the remainder will be discarded.
-    # Ex: If BATCH_SIZE is 64 and training set has 55000 examples
-    # steps_per_epoch = 55000 // 64 = 859
-    # num_examples = 859 * 64 = 54976
-    #
-    # So in that case we go over 54976 examples instead of 55000.
     steps_per_epoch = dataset.length() // BATCH_SIZE
     num_examples = steps_per_epoch * BATCH_SIZE
     total_acc, total_loss = 0, 0
@@ -160,20 +122,15 @@ if __name__ == '__main__':
     X_train, y_train = train['features'], train['labels']
     X_test, y_test = test['features'], test['labels']
 
-    # delete
-    ##X_t_a = np.zeros_like(X_train)
-    ##y_t_a = np.zeros_like(y_train)
-    ##for i in range(X_t_a.shape[0]):
-        ##X_t_a[i] = util.transform_image(X_train[i], 20, 10, 5)
-        ##y_t_a[i] = y_train[i]
+    X_train_transformed = np.zeros_like(X_train)
+    y_train_transformed = np.zeros_like(y_train)
+    for i in range(X_train_transformed.shape[0]):
+        X_train_transformed[i] = util.transform_image(X_train[i], 20, 10, 5)
+        y_train_transformed[i] = y_train[i]
 
-    X_aug = np.load('augmented_data_x.hkl')
-    y_aug = np.load('augmented_data_y.hkl')
-
-    X_train = np.vstack((X_train, X_aug))
-    y_train = np.hstack((y_train, y_aug))
+    X_train = np.vstack((X_train, X_train_transformed))
+    y_train = np.hstack((y_train, y_train_transformed))
     y_train = y_train.astype(int)
-    # delete
 
     X_train_centered = util.min_max_normalization(X_train)
     X_test_centered = util.min_max_normalization(X_test)
@@ -185,11 +142,9 @@ if __name__ == '__main__':
     testing_dataset = util.DataSet(X_test_centered, y_test)
 
     saver = tf.train.Saver()
-    #save_file = 'model.ckpt'
     best_dev_acc = 1e-10
 
     with tf.Session() as sess:
-        # sess.run(tf.global_variables_initializer())
         sess.run(tf.initialize_all_variables())
         steps_per_epoch = len(train_features) // BATCH_SIZE
         num_examples = steps_per_epoch * BATCH_SIZE
@@ -200,8 +155,8 @@ if __name__ == '__main__':
         training_losses = []
         dev_losses = []
 
-        # Train model
-        print('model building starts...')
+        # Train the model
+        print('Model building starts...')
         for epoch in range(EPOCHS):
             for step in range(steps_per_epoch):
                 batch_x, batch_y = training_dataset.next_batch(BATCH_SIZE) 
@@ -231,4 +186,3 @@ if __name__ == '__main__':
             print('testing loss:{:.4f} and testing acc: {:4f}'.format(loss_test, acc_test))  
     
         util.plot_learning_curves(training_losses, training_accuracies, dev_losses, dev_accuracies)
-
